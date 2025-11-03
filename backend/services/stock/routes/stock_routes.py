@@ -13,7 +13,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
 from shared.database import get_db
 from shared.config import settings
-from models.user import User
+from shared.models.user import User
 from schemas.stock import (
     StockCreate,
     StockUpdate,
@@ -28,9 +28,8 @@ from services.stock_service import StockService
 from services.ticker_validator import TickerValidationService
 from services.rate_limiter import RateLimitService
 
-# Import auth middleware (we'll need to create this import path)
-sys.path.append(str(Path(__file__).parent.parent.parent / "auth"))
-from middleware.auth_middleware import get_current_user, require_admin
+# Import auth middleware from shared
+from shared.middleware.auth_middleware import get_current_user, require_admin
 
 # Initialize services
 ticker_validator = TickerValidationService(

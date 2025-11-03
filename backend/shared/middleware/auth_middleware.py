@@ -9,13 +9,12 @@ from typing import Optional
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from shared.auth_utils import verify_access_token
 from shared.database import get_db
 from shared.models.user import User, UserRole
-from services.auth_service import AuthService
+from sqlalchemy import select
 
 
 security = HTTPBearer()
@@ -56,7 +55,12 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    user = await AuthService.get_user_by_id(db, user_id)
+    # Get user from database
+    result = await db.execute(
+        select(User).where(User.id == user_id)
+    )
+    user = result.scalar_one_or_none()
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -112,4 +116,8 @@ async def get_optional_user(
         return await get_current_user(credentials, db)
     except HTTPException:
         return None
+
+
+# Alias for get_current_admin for backward compatibility
+require_admin = get_current_admin
 

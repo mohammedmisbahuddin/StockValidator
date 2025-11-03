@@ -12,7 +12,7 @@ from typing import List
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
 from shared.database import get_db
-from models.user import User
+from shared.models.user import User
 from schemas.stock import (
     RateLimitInfo,
     RateLimitUpdate,
@@ -21,9 +21,8 @@ from schemas.stock import (
 )
 from services.rate_limiter import RateLimitService
 
-# Import auth middleware
-sys.path.append(str(Path(__file__).parent.parent.parent / "auth"))
-from middleware.auth_middleware import require_admin
+# Import auth middleware from shared
+from shared.middleware.auth_middleware import require_admin
 
 # Initialize service
 rate_limiter = RateLimitService()

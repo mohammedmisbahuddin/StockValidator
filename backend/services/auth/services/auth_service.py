@@ -13,7 +13,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from shared.auth_utils import hash_password, verify_password, create_access_token, create_refresh_token
 from shared.config import settings
-from models.user import User, RefreshToken, UserRole
+from shared.models.user import User, RefreshToken, UserRole
 from schemas.user import UserCreate, UserLogin, TokenResponse
 
 

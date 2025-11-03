@@ -13,7 +13,7 @@ from shared.database import get_db
 from schemas.user import UserCreate, UserLogin, UserResponse, TokenResponse, RefreshTokenRequest
 from services.auth_service import AuthService
 from middleware.auth_middleware import get_current_user
-from models.user import User
+from shared.models.user import User
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])

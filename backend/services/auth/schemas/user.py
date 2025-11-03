@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from models.user import UserRole
+from shared.models.user import UserRole
 
 
 class UserBase(BaseModel):
