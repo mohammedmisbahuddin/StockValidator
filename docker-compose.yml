@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: stockvalidator-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-stockadmin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stockpass123}
+      POSTGRES_DB: ${POSTGRES_DB:-stockvalidator}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-stockadmin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stockvalidator-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: stockvalidator-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - stockvalidator-network
+
+  # Uncomment these when services are ready to run in Docker
+  # auth-service:
+  #   build:
+  #     context: ./backend/services/auth
+  #     dockerfile: Dockerfile
+  #   container_name: stockvalidator-auth
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #     - REDIS_URL=${REDIS_URL}
+  #     - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+  #   ports:
+  #     - "8001:8001"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - stockvalidator-network
+
+  # stock-service:
+  #   build:
+  #     context: ./backend/services/stock
+  #     dockerfile: Dockerfile
+  #   container_name: stockvalidator-stock
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #     - REDIS_URL=${REDIS_URL}
+  #   ports:
+  #     - "8002:8002"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - stockvalidator-network
+
+  # notification-service:
+  #   build:
+  #     context: ./backend/services/notification
+  #     dockerfile: Dockerfile
+  #   container_name: stockvalidator-notification
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #     - REDIS_URL=${REDIS_URL}
+  #   ports:
+  #     - "8003:8003"
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   networks:
+  #     - stockvalidator-network
+
+  # gateway:
+  #   build:
+  #     context: ./backend/gateway
+  #     dockerfile: Dockerfile
+  #   container_name: stockvalidator-gateway
+  #   environment:
+  #     - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+  #     - STOCK_SERVICE_URL=${STOCK_SERVICE_URL}
+  #     - NOTIFICATION_SERVICE_URL=${NOTIFICATION_SERVICE_URL}
+  #     - REDIS_URL=${REDIS_URL}
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - auth-service
+  #     - stock-service
+  #     - notification-service
+  #   networks:
+  #     - stockvalidator-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  stockvalidator-network:
+    driver: bridge
+
