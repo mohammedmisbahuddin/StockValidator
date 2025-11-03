@@ -1,0 +1,235 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.2, pytest-8.0.0, pluggy-1.6.0 -- /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/services/stock
+configfile: pytest.ini
+plugins: asyncio-0.23.5, cov-4.1.0, anyio-3.7.1
+asyncio: mode=Mode.AUTO
+collecting ... collected 37 items
+
+tests/test_rate_limiter.py::TestRateLimiterService::test_initialize_user_limit FAILED [  2%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_get_remaining_searches FAILED [  5%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_get_remaining_searches_not_initialized FAILED [  8%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_decrement_search_success FAILED [ 10%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_decrement_search_limit_exceeded PASSED [ 13%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_reset_user_limit FAILED [ 16%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_reset_user_limit_not_initialized PASSED [ 18%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_update_user_limit FAILED [ 21%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_reset_all_limits PASSED [ 24%]
+tests/test_rate_limiter.py::TestRateLimiterService::test_set_universal_limit PASSED [ 27%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_health_check PASSED [ 29%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_validate_ticker_requires_auth PASSED [ 32%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_create_stock_requires_admin PASSED [ 35%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_get_all_stocks_requires_admin PASSED [ 37%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_update_stock_requires_admin PASSED [ 40%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_delete_stock_requires_admin PASSED [ 43%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_search_stock_requires_auth PASSED [ 45%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_get_rate_limit_requires_admin PASSED [ 48%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_update_rate_limit_requires_admin PASSED [ 51%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_reset_rate_limit_requires_admin PASSED [ 54%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_reset_all_limits_requires_admin PASSED [ 56%]
+tests/test_stock_endpoints.py::TestStockEndpoints::test_set_universal_limit_requires_admin PASSED [ 59%]
+tests/test_stock_service.py::TestStockService::test_create_stock_success FAILED [ 62%]
+tests/test_stock_service.py::TestStockService::test_create_stock_duplicate PASSED [ 64%]
+tests/test_stock_service.py::TestStockService::test_get_stock FAILED     [ 67%]
+tests/test_stock_service.py::TestStockService::test_get_stock_not_found FAILED [ 70%]
+tests/test_stock_service.py::TestStockService::test_get_all_stocks FAILED [ 72%]
+tests/test_stock_service.py::TestStockService::test_update_stock FAILED  [ 75%]
+tests/test_stock_service.py::TestStockService::test_update_stock_not_found FAILED [ 78%]
+tests/test_stock_service.py::TestStockService::test_delete_stock FAILED  [ 81%]
+tests/test_stock_service.py::TestStockService::test_delete_stock_not_found FAILED [ 83%]
+tests/test_stock_service.py::TestStockService::test_validate_ticker PASSED [ 86%]
+tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_yfinance_success FAILED [ 89%]
+tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_yfinance_no_price FAILED [ 91%]
+tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_finnhub_fallback PASSED [ 94%]
+tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_invalid FAILED [ 97%]
+tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_network_error FAILED [100%]
+
+=================================== FAILURES ===================================
+______________ TestRateLimiterService.test_initialize_user_limit _______________
+tests/test_rate_limiter.py:31: in test_initialize_user_limit
+    with patch.object(rate_limiter.redis, 'set', new_callable=AsyncMock) as mock_set:
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1495: in __enter__
+    original, local = self.get_original()
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1465: in get_original
+    raise AttributeError(
+E   AttributeError: <shared.redis_client.RedisClient object at 0x107d09a90> does not have the attribute 'set'
+______________ TestRateLimiterService.test_get_remaining_searches ______________
+tests/test_rate_limiter.py:42: in test_get_remaining_searches
+    with patch.object(rate_limiter.redis, 'get', new_callable=AsyncMock) as mock_get:
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1495: in __enter__
+    original, local = self.get_original()
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1465: in get_original
+    raise AttributeError(
+E   AttributeError: <shared.redis_client.RedisClient object at 0x107d09a90> does not have the attribute 'get'
+______ TestRateLimiterService.test_get_remaining_searches_not_initialized ______
+tests/test_rate_limiter.py:53: in test_get_remaining_searches_not_initialized
+    with patch.object(rate_limiter.redis, 'get', new_callable=AsyncMock) as mock_get:
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1495: in __enter__
+    original, local = self.get_original()
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1465: in get_original
+    raise AttributeError(
+E   AttributeError: <shared.redis_client.RedisClient object at 0x107d09a90> does not have the attribute 'get'
+_____________ TestRateLimiterService.test_decrement_search_success _____________
+tests/test_rate_limiter.py:66: in test_decrement_search_success
+    with patch.object(rate_limiter.redis, 'decr', new_callable=AsyncMock) as mock_decr:
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1495: in __enter__
+    original, local = self.get_original()
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1465: in get_original
+    raise AttributeError(
+E   AttributeError: <shared.redis_client.RedisClient object at 0x107d09a90> does not have the attribute 'decr'
+_________________ TestRateLimiterService.test_reset_user_limit _________________
+tests/test_rate_limiter.py:92: in test_reset_user_limit
+    with patch.object(rate_limiter.redis, 'set', new_callable=AsyncMock) as mock_set:
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1495: in __enter__
+    original, local = self.get_original()
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1465: in get_original
+    raise AttributeError(
+E   AttributeError: <shared.redis_client.RedisClient object at 0x107d09a90> does not have the attribute 'set'
+________________ TestRateLimiterService.test_update_user_limit _________________
+tests/test_rate_limiter.py:111: in test_update_user_limit
+    with patch.object(rate_limiter.redis, 'set', new_callable=AsyncMock) as mock_set:
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1495: in __enter__
+    original, local = self.get_original()
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:1465: in get_original
+    raise AttributeError(
+E   AttributeError: <shared.redis_client.RedisClient object at 0x107d09a90> does not have the attribute 'set'
+__________________ TestStockService.test_create_stock_success __________________
+tests/test_stock_service.py:60: in test_create_stock_success
+    stock = await stock_service.create_stock(mock_db, stock_data, user_id)
+services/stock_service.py:56: in create_stock
+    raise ValueError(f"Stock with ticker {stock_data.ticker} already exists")
+E   ValueError: Stock with ticker AAPL already exists
+_______________________ TestStockService.test_get_stock ________________________
+tests/test_stock_service.py:99: in test_get_stock
+    assert stock.ticker == "AAPL"
+E   AttributeError: 'coroutine' object has no attribute 'ticker'
+__________________ TestStockService.test_get_stock_not_found ___________________
+tests/test_stock_service.py:110: in test_get_stock_not_found
+    assert stock is None
+E   assert <coroutine object AsyncMockMixin._execute_mock_call at 0x11ffbeb40> is None
+_____________________ TestStockService.test_get_all_stocks _____________________
+tests/test_stock_service.py:128: in test_get_all_stocks
+    result = await stock_service.get_all_stocks(mock_db)
+services/stock_service.py:103: in get_all_stocks
+    stocks = result.scalars().all()
+E   AttributeError: 'coroutine' object has no attribute 'all'
+______________________ TestStockService.test_update_stock ______________________
+tests/test_stock_service.py:147: in test_update_stock
+    stock = await stock_service.update_stock(mock_db, "AAPL", stock_data, user_id)
+services/stock_service.py:150: in update_stock
+    old_category = stock.category
+E   AttributeError: 'coroutine' object has no attribute 'category'
+_________________ TestStockService.test_update_stock_not_found _________________
+tests/test_stock_service.py:163: in test_update_stock_not_found
+    stock = await stock_service.update_stock(mock_db, "NOTFOUND", stock_data, user_id)
+services/stock_service.py:150: in update_stock
+    old_category = stock.category
+E   AttributeError: 'coroutine' object has no attribute 'category'
+______________________ TestStockService.test_delete_stock ______________________
+tests/test_stock_service.py:179: in test_delete_stock
+    mock_db.delete.assert_called_once_with(mock_stock)
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:989: in assert_called_once_with
+    return self.assert_called_with(*args, **kwargs)
+/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py:977: in assert_called_with
+    raise AssertionError(_error_message()) from cause
+E   AssertionError: expected call not found.
+E   Expected: delete(<Mock name='mock.execute().scalar_one_or_none()' id='4813707584'>)
+E     Actual: delete(<coroutine object AsyncMockMixin._execute_mock_call at 0x11ffbc240>)
+_________________ TestStockService.test_delete_stock_not_found _________________
+tests/test_stock_service.py:191: in test_delete_stock_not_found
+    assert deleted is False
+E   assert True is False
+______ TestTickerValidationService.test_validate_ticker_yfinance_success _______
+tests/test_ticker_validator.py:35: in test_validate_ticker_yfinance_success
+    assert is_valid is True
+E   assert False is True
+------------------------------ Captured log call -------------------------------
+ERROR    services.ticker_validator:ticker_validator.py:165 Finnhub validation error for AAPL: 401 Client Error: Unauthorized for url: https://finnhub.io/api/v1/stock/profile2?symbol=AAPL&token=test_key
+______ TestTickerValidationService.test_validate_ticker_yfinance_no_price ______
+tests/test_ticker_validator.py:53: in test_validate_ticker_yfinance_no_price
+    assert is_valid is True
+E   assert False is True
+------------------------------ Captured log call -------------------------------
+ERROR    services.ticker_validator:ticker_validator.py:165 Finnhub validation error for TEST: 401 Client Error: Unauthorized for url: https://finnhub.io/api/v1/stock/profile2?symbol=TEST&token=test_key
+___________ TestTickerValidationService.test_validate_ticker_invalid ___________
+tests/test_ticker_validator.py:101: in test_validate_ticker_invalid
+    assert source == "none"
+E   AssertionError: assert None == 'none'
+________ TestTickerValidationService.test_validate_ticker_network_error ________
+tests/test_ticker_validator.py:119: in test_validate_ticker_network_error
+    assert source == "none"
+E   AssertionError: assert None == 'none'
+------------------------------ Captured log call -------------------------------
+ERROR    services.ticker_validator:ticker_validator.py:112 yfinance validation error for AAPL: Network error
+ERROR    services.ticker_validator:ticker_validator.py:165 Finnhub validation error for AAPL: Network error
+=============================== warnings summary ===============================
+../../venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:295
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/venv/lib/python3.13/site-packages/pydantic/_internal/_config.py:295: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+../../venv/lib/python3.13/site-packages/starlette/formparsers.py:10
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/venv/lib/python3.13/site-packages/starlette/formparsers.py:10: PendingDeprecationWarning: Please use `import python_multipart` instead.
+    import multipart
+
+main.py:91
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/services/stock/main.py:91: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+../../venv/lib/python3.13/site-packages/fastapi/applications.py:4547
+../../venv/lib/python3.13/site-packages/fastapi/applications.py:4547
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/venv/lib/python3.13/site-packages/fastapi/applications.py:4547: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)
+
+main.py:100
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/services/stock/main.py:100: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+tests/test_stock_endpoints.py: 12 warnings
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/venv/lib/python3.13/site-packages/httpx/_client.py:1426: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=ASGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+tests/test_stock_service.py::TestStockService::test_create_stock_duplicate
+  /Users/mmisbahuddin/Documents/Personal_work/StockValidator/backend/services/stock/tests/test_stock_service.py:83: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+    with pytest.raises(ValueError, match="already exists"):
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_rate_limiter.py::TestRateLimiterService::test_initialize_user_limit
+FAILED tests/test_rate_limiter.py::TestRateLimiterService::test_get_remaining_searches
+FAILED tests/test_rate_limiter.py::TestRateLimiterService::test_get_remaining_searches_not_initialized
+FAILED tests/test_rate_limiter.py::TestRateLimiterService::test_decrement_search_success
+FAILED tests/test_rate_limiter.py::TestRateLimiterService::test_reset_user_limit
+FAILED tests/test_rate_limiter.py::TestRateLimiterService::test_update_user_limit
+FAILED tests/test_stock_service.py::TestStockService::test_create_stock_success
+FAILED tests/test_stock_service.py::TestStockService::test_get_stock - Attrib...
+FAILED tests/test_stock_service.py::TestStockService::test_get_stock_not_found
+FAILED tests/test_stock_service.py::TestStockService::test_get_all_stocks - A...
+FAILED tests/test_stock_service.py::TestStockService::test_update_stock - Att...
+FAILED tests/test_stock_service.py::TestStockService::test_update_stock_not_found
+FAILED tests/test_stock_service.py::TestStockService::test_delete_stock - Ass...
+FAILED tests/test_stock_service.py::TestStockService::test_delete_stock_not_found
+FAILED tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_yfinance_success
+FAILED tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_yfinance_no_price
+FAILED tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_invalid
+FAILED tests/test_ticker_validator.py::TestTickerValidationService::test_validate_ticker_network_error
+================== 18 failed, 19 passed, 19 warnings in 1.63s ==================
+<sys>:0: RuntimeWarning: coroutine 'AsyncMockMixin._execute_mock_call' was never awaited
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback

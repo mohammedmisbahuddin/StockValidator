@@ -36,8 +36,8 @@ class RateLimitService:
             limit: Maximum search limit
         """
         user_id_str = str(user_id)
-        await self.redis.set(f"user_limit:{user_id_str}", limit)
-        await self.redis.set(f"user_limit_max:{user_id_str}", limit)
+        await self.redis.client.set(f"user_limit:{user_id_str}", limit)
+        await self.redis.client.set(f"user_limit_max:{user_id_str}", limit)
         logger.info(f"Initialized rate limit for user {user_id}: {limit}")
     
     async def get_remaining_searches(self, user_id: UUID) -> int:
@@ -51,7 +51,7 @@ class RateLimitService:
             Number of remaining searches (0 if limit reached or not initialized)
         """
         user_id_str = str(user_id)
-        remaining = await self.redis.get(f"user_limit:{user_id_str}")
+        remaining = await self.redis.client.get(f"user_limit:{user_id_str}")
         
         if remaining is None:
             return 0
@@ -69,7 +69,7 @@ class RateLimitService:
             Maximum search limit (0 if not initialized)
         """
         user_id_str = str(user_id)
-        max_limit = await self.redis.get(f"user_limit_max:{user_id_str}")
+        max_limit = await self.redis.client.get(f"user_limit_max:{user_id_str}")
         
         if max_limit is None:
             return 0
@@ -96,7 +96,7 @@ class RateLimitService:
             return False, 0
         
         # Decrement
-        new_remaining = await self.redis.decr(f"user_limit:{user_id_str}")
+        new_remaining = await self.redis.client.decr(f"user_limit:{user_id_str}")
         logger.info(f"Decremented search for user {user_id}: {new_remaining} remaining")
         
         return True, max(0, new_remaining)
@@ -118,7 +118,7 @@ class RateLimitService:
             logger.warning(f"Cannot reset limit for user {user_id}: not initialized")
             return False
         
-        await self.redis.set(f"user_limit:{user_id_str}", max_limit)
+        await self.redis.client.set(f"user_limit:{user_id_str}", max_limit)
         logger.info(f"Reset rate limit for user {user_id} to {max_limit}")
         
         return True
@@ -132,8 +132,8 @@ class RateLimitService:
             new_limit: New maximum search limit
         """
         user_id_str = str(user_id)
-        await self.redis.set(f"user_limit:{user_id_str}", new_limit)
-        await self.redis.set(f"user_limit_max:{user_id_str}", new_limit)
+        await self.redis.client.set(f"user_limit:{user_id_str}", new_limit)
+        await self.redis.client.set(f"user_limit_max:{user_id_str}", new_limit)
         logger.info(f"Updated rate limit for user {user_id} to {new_limit}")
     
     async def reset_all_limits(self, user_ids: list[UUID]) -> int:

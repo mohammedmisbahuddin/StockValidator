@@ -91,16 +91,29 @@ async def health_check():
 @app.on_event("startup")
 async def startup_event():
     """Application startup"""
+    from shared.redis_client import redis_client
+    
     logger.info("Stock Service starting up...")
     logger.info(f"Database: {settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}")
     logger.info(f"Redis: {settings.REDIS_HOST}:{settings.REDIS_PORT}")
+    
+    # Initialize Redis connection
+    await redis_client.connect()
+    logger.info("Redis connected successfully")
+    
     logger.info("Stock Service ready!")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Application shutdown"""
+    from shared.redis_client import redis_client
+    
     logger.info("Stock Service shutting down...")
+    
+    # Disconnect Redis
+    await redis_client.disconnect()
+    logger.info("Redis disconnected")
 
 
 if __name__ == "__main__":
