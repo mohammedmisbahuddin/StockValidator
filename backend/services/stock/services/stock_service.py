@@ -56,11 +56,24 @@ class StockService:
             raise ValueError(f"Stock with ticker {stock_data.ticker} already exists")
         
         # Create stock
+        # Convert enum to string value for database
+        if hasattr(stock_data.category, 'value'):
+            category_value = str(stock_data.category.value)
+        else:
+            category_value = str(stock_data.category)
+            
+        if stock_data.subcategory and hasattr(stock_data.subcategory, 'value'):
+            subcategory_value = str(stock_data.subcategory.value)
+        else:
+            subcategory_value = str(stock_data.subcategory) if stock_data.subcategory else None
+        
+        logger.info(f"Creating stock with category: '{category_value}' (type: {type(category_value)})")
+        
         stock = Stock(
             ticker=stock_data.ticker.upper(),
             company_name=stock_data.company_name,
-            category=stock_data.category,
-            subcategory=stock_data.subcategory,
+            category=category_value,
+            subcategory=subcategory_value,
             current_price=stock_data.current_price,
             created_by=created_by,
             state_history=[]
@@ -111,7 +124,8 @@ class StockService:
         }
         
         for stock in stocks:
-            category_key = stock.category.value
+            # category is now a string from PG_ENUM, not a Python enum
+            category_key = stock.category if isinstance(stock.category, str) else stock.category.value
             stock_response = StockResponse.model_validate(stock)
             grouped[category_key].append(stock_response)
         
@@ -154,18 +168,20 @@ class StockService:
             stock.company_name = stock_data.company_name
         
         if stock_data.category is not None:
-            stock.category = stock_data.category
+            new_category_value = stock_data.category.value if isinstance(stock_data.category, StockCategory) else stock_data.category
+            stock.category = new_category_value
             
             # Add state history if category changed
-            if old_category != stock_data.category:
+            old_category_value = old_category.value if isinstance(old_category, StockCategory) else old_category
+            if old_category_value != new_category_value:
                 stock.add_state_change(
-                    from_category=old_category.value,
-                    to_category=stock_data.category.value,
+                    from_category=old_category_value,
+                    to_category=new_category_value,
                     changed_by=updated_by
                 )
         
         if stock_data.subcategory is not None:
-            stock.subcategory = stock_data.subcategory
+            stock.subcategory = stock_data.subcategory.value if isinstance(stock_data.subcategory, StockSubcategory) else stock_data.subcategory
         elif stock_data.category is not None and stock_data.category != StockCategory.READY:
             # Clear subcategory if not ready
             stock.subcategory = None

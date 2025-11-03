@@ -4,8 +4,8 @@ Stock model for tracking stocks across different categories
 from datetime import datetime
 from enum import Enum
 from uuid import UUID, uuid4
-from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey, Enum as SQLEnum, Index
-from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
+from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey, Index
+from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB, ENUM as PG_ENUM
 from sqlalchemy.orm import relationship
 import sys
 from pathlib import Path
@@ -49,8 +49,16 @@ class Stock(Base):
     
     # Stock Information
     company_name = Column(String(255), nullable=False)
-    category = Column(SQLEnum(StockCategory), nullable=False, index=True)
-    subcategory = Column(SQLEnum(StockSubcategory), nullable=True)
+    # Use PostgreSQL ENUM type (existing types in database)
+    category = Column(
+        PG_ENUM('far', 'near', 'almost_ready', 'ready', name='stock_category', schema='stock_schema', create_type=False),
+        nullable=False,
+        index=True
+    )
+    subcategory = Column(
+        PG_ENUM('pullback1', 'pullback2', name='stock_subcategory', schema='stock_schema', create_type=False),
+        nullable=True
+    )
     current_price = Column(Numeric(10, 2), nullable=True)
     
     # Audit Fields
