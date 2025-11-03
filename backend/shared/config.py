@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     
     # Market Data API
     FINNHUB_API_KEY: Optional[str] = None
+    USE_MOCK_VALIDATOR: bool = True  # Set to False to use real APIs (yfinance/Finnhub)
     
     # Service URLs
     AUTH_SERVICE_URL: str = "http://localhost:8001"

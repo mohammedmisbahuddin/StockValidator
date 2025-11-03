@@ -14,7 +14,7 @@ from models.stock import StockCategory, StockSubcategory
 
 class StockBase(BaseModel):
     """Base stock schema with common fields"""
-    ticker: str = Field(..., min_length=1, max_length=10, description="Stock ticker symbol")
+    ticker: str = Field(..., min_length=1, max_length=15, description="Stock ticker symbol (supports Indian stocks like RELIANCE.NS)")
     company_name: str = Field(..., min_length=1, max_length=255, description="Company name")
     category: StockCategory = Field(..., description="Stock category")
     subcategory: Optional[StockSubcategory] = Field(None, description="Subcategory (only for 'ready' stocks)")
@@ -98,7 +98,7 @@ class StockListResponse(BaseModel):
 
 class TickerValidationRequest(BaseModel):
     """Schema for ticker validation request"""
-    ticker: str = Field(..., min_length=1, max_length=10, description="Stock ticker symbol")
+    ticker: str = Field(..., min_length=1, max_length=15, description="Stock ticker symbol (supports Indian stocks like RELIANCE.NS)")
     
     @field_validator('ticker')
     @classmethod

@@ -26,15 +26,23 @@ from schemas.stock import (
 )
 from services.stock_service import StockService
 from services.ticker_validator import TickerValidationService
+from services.mock_ticker_validator import MockTickerValidationService
 from services.rate_limiter import RateLimitService
 
 # Import auth middleware from shared
 from shared.middleware.auth_middleware import get_current_user, require_admin
 
 # Initialize services
-ticker_validator = TickerValidationService(
-    finnhub_api_key=getattr(settings, 'FINNHUB_API_KEY', None)
-)
+# Use mock validator in development to avoid API rate limits
+if settings.USE_MOCK_VALIDATOR:
+    print("🧪 Using MOCK ticker validator (no API calls)")
+    ticker_validator = MockTickerValidationService()
+else:
+    print("🌐 Using REAL ticker validator (yfinance/Finnhub)")
+    ticker_validator = TickerValidationService(
+        finnhub_api_key=getattr(settings, 'FINNHUB_API_KEY', None)
+    )
+
 stock_service = StockService(ticker_validator)
 rate_limiter = RateLimitService()
 
