@@ -16,8 +16,27 @@ The JMeter test plan (`StockValidator_API_Tests.jmx`) contains comprehensive tes
 - Token refresh
 - Error scenarios (wrong password, missing token)
 
-### Phase 3: Stock Service (To be added)
-- Will be appended after Phase 3 development
+### Phase 3: Stock Service ✅
+**Admin Operations:**
+- Validate ticker (AAPL) with yfinance/Finnhub
+- Create stock (AAPL - Ready/Pullback1)
+- Create stock (MSFT - Near)
+- Get all stocks grouped by category
+- Update stock category (AAPL: Ready → Near)
+- Get specific stock (MSFT)
+
+**User Search & Rate Limiting:**
+- Search valid stock in system (AAPL) - limit decremented
+- Search valid stock not in system (GOOGL) - limit decremented
+- Search invalid stock (INVALID123) - no limit decrement
+- View remaining searches after each search
+
+**Admin Rate Limit Management:**
+- Get user rate limit info
+- Update user rate limit (100 searches)
+- Reset individual user limit
+- Reset all user limits
+- Set universal rate limit (50 searches)
 
 ## Prerequisites
 
@@ -45,13 +64,21 @@ Before running tests, ensure all services are running:
 
 ```bash
 # Start infrastructure
-cd backend
 docker-compose up -d postgres redis
 
-# Start Auth Service
+# Start Auth Service (Port 8001)
 cd backend/services/auth
 source ../../venv/bin/activate
 python main.py &
+
+# Start Stock Service (Port 8002)
+cd backend/services/stock
+source ../../venv/bin/activate
+python main.py &
+
+# Verify services are running
+curl http://localhost:8001/health
+curl http://localhost:8002/health
 ```
 
 ## Running Tests
@@ -103,29 +130,58 @@ jmeter -n -t testing/jmeter/StockValidator_API_Tests.jmx \
 ### Thread Groups
 Each thread group represents a user flow:
 
-1. **Auth Service - User Registration Flow**
-   - Health check
-   - Register admin
-   - Login admin
-   - Get current admin user
+**Authentication (Phase 2):**
+1. **🏁 setUp Thread Group (Runs First)**
+   - Register admin & user
+   - Extract tokens and user IDs
+   - Share globally across all tests
+
+2. **👤 Admin Operations**
+   - Get current user
    - Refresh token
 
-2. **Auth Service - Regular User Flow**
-   - Register regular user
-   - Login regular user
+3. **👥 User Operations**
    - Get user profile
 
-3. **Auth Service - Error Scenarios**
+4. **❌ Error Scenarios**
    - Wrong password
    - Missing authentication token
+
+**Stock Service (Phase 3):**
+5. **📦 Stock Service - Admin Operations**
+   - Validate ticker
+   - Create stocks (AAPL, MSFT)
+   - Get all stocks (grouped)
+   - Update stock category
+   - Get specific stock
+
+6. **🔍 Stock Service - User Search & Rate Limiting**
+   - Search stock in system
+   - Search valid ticker not in system
+   - Search invalid ticker (no limit decrement)
+
+7. **⚙️ Stock Service - Admin Rate Limit Management**
+   - Get user rate limit info
+   - Update user limit
+   - Reset individual user
+   - Reset all users
+   - Set universal limit
 
 ### Variables
 Configurable test parameters:
 
+**Service Endpoints:**
 ```
 AUTH_HOST=localhost
 AUTH_PORT=8001
+STOCK_HOST=localhost (port 8002 hardcoded in requests)
 PROTOCOL=http
+```
+
+**Global Properties (Shared Across Thread Groups):**
+```
+admin_username, admin_access_token, admin_refresh_token, admin_id
+user_username, user_access_token, user_refresh_token, user_id
 ```
 
 To change variables, edit them in the Test Plan or pass via command line:
@@ -275,17 +331,27 @@ jobs:
 - Token refresh: ~100-150ms
 - Get user: ~50-100ms
 
-These will be updated as we add more services and optimize.
+### Stock Service (Phase 3)
+- Ticker validation: ~500-1500ms (depends on yfinance/Finnhub API)
+- Create stock: ~100-200ms
+- Get all stocks: ~50-150ms
+- Update stock: ~100-200ms
+- User search: ~100-300ms
+- Rate limit operations: ~50-100ms
+
+**Note:** Ticker validation times vary based on external API response times.
 
 ## Version History
 
 - **v1.0** (2025-10-31): Initial Auth Service tests
-- **v2.0** (TBD): Add Stock Service tests
+- **v2.0** (2025-11-03): ✅ Added Stock Service tests (Admin ops, User search, Rate limiting)
 - **v3.0** (TBD): Add Notification Service tests
 
 ---
 
-**Last Updated:** October 31, 2025
-**Services Covered:** Authentication (Phase 2)
-**Total Test Scenarios:** 10+
+**Last Updated:** November 3, 2025  
+**Services Covered:** Authentication (Phase 2) + Stock Service (Phase 3)  
+**Total Test Scenarios:** 24+  
+**Thread Groups:** 7  
+**Endpoints Tested:** 20+
 
