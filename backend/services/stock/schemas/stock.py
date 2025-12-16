@@ -26,6 +26,14 @@ class StockBase(BaseModel):
         """Convert ticker to uppercase"""
         return v.upper().strip()
     
+    @field_validator('subcategory', mode='before')
+    @classmethod
+    def normalize_subcategory(cls, v) -> Optional[StockSubcategory]:
+        """Convert empty strings to None before validation"""
+        if v == "" or v is None:
+            return None
+        return v
+    
     @field_validator('subcategory')
     @classmethod
     def validate_subcategory(cls, v: Optional[StockSubcategory], info) -> Optional[StockSubcategory]:
@@ -51,6 +59,14 @@ class StockUpdate(BaseModel):
     category: Optional[StockCategory] = Field(None, description="Stock category")
     subcategory: Optional[StockSubcategory] = Field(None, description="Subcategory (only for 'ready' stocks)")
     current_price: Optional[Decimal] = Field(None, ge=0, description="Current market price")
+    
+    @field_validator('subcategory', mode='before')
+    @classmethod
+    def normalize_subcategory(cls, v) -> Optional[StockSubcategory]:
+        """Convert empty strings to None before validation"""
+        if v == "" or v is None:
+            return None
+        return v
     
     @field_validator('subcategory')
     @classmethod

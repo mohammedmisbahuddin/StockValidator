@@ -116,3 +116,5 @@ def create_mock_validator() -> MockTickerValidationService:
     """Create a mock validator instance"""
     return MockTickerValidationService(auto_detect_indian=True)
 
+
+
