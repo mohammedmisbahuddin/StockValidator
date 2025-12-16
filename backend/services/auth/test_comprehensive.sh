@@ -21,7 +21,7 @@ echo ""
 # Test 1: Health Check
 echo "Test 1: Health Check"
 echo "----------------------------------------"
-HEALTH=$(curl -s http://localhost:8001/health)
+HEALTH=$(curl -s http://localhost:8000/health)
 echo "$HEALTH" | python3 -m json.tool
 if echo "$HEALTH" | grep -q "healthy"; then
     echo "✅ Health check passed"
@@ -33,7 +33,7 @@ echo ""
 # Test 2: Register Admin User
 echo "Test 2: Register Admin User"
 echo "----------------------------------------"
-ADMIN_RESP=$(curl -s -X POST http://localhost:8001/auth/register \
+ADMIN_RESP=$(curl -s -X POST http://localhost:8000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@test.com","username":"admin","password":"AdminPass123","role":"admin"}')
 echo "$ADMIN_RESP" | python3 -m json.tool
@@ -47,7 +47,7 @@ echo ""
 # Test 3: Register Regular User
 echo "Test 3: Register Regular User"
 echo "----------------------------------------"
-USER_RESP=$(curl -s -X POST http://localhost:8001/auth/register \
+USER_RESP=$(curl -s -X POST http://localhost:8000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"user@test.com","username":"testuser","password":"UserPass123","role":"user"}')
 echo "$USER_RESP" | python3 -m json.tool
@@ -61,7 +61,7 @@ echo ""
 # Test 4: Login with Admin
 echo "Test 4: Admin Login"
 echo "----------------------------------------"
-ADMIN_LOGIN=$(curl -s -X POST http://localhost:8001/auth/login \
+ADMIN_LOGIN=$(curl -s -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"AdminPass123"}')
 echo "$ADMIN_LOGIN" | python3 -m json.tool
@@ -77,7 +77,7 @@ echo ""
 # Test 5: Login with User
 echo "Test 5: User Login"
 echo "----------------------------------------"
-USER_LOGIN=$(curl -s -X POST http://localhost:8001/auth/login \
+USER_LOGIN=$(curl -s -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","password":"UserPass123"}')
 echo "$USER_LOGIN" | python3 -m json.tool
@@ -95,7 +95,7 @@ echo ""
 echo "Test 6: Get Current User (Admin)"
 echo "----------------------------------------"
 if [ ! -z "$ADMIN_TOKEN" ]; then
-    CURRENT_ADMIN=$(curl -s http://localhost:8001/auth/me \
+    CURRENT_ADMIN=$(curl -s http://localhost:8000/api/auth/me \
       -H "Authorization: Bearer $ADMIN_TOKEN")
     echo "$CURRENT_ADMIN" | python3 -m json.tool
     if echo "$CURRENT_ADMIN" | grep -q "admin@test.com"; then
@@ -112,7 +112,7 @@ echo ""
 echo "Test 7: Get Current User (Regular User)"
 echo "----------------------------------------"
 if [ ! -z "$USER_TOKEN" ]; then
-    CURRENT_USER=$(curl -s http://localhost:8001/auth/me \
+    CURRENT_USER=$(curl -s http://localhost:8000/api/auth/me \
       -H "Authorization: Bearer $USER_TOKEN")
     echo "$CURRENT_USER" | python3 -m json.tool
     if echo "$CURRENT_USER" | grep -q "user@test.com"; then
@@ -129,7 +129,7 @@ echo ""
 echo "Test 8: Refresh Token"
 echo "----------------------------------------"
 if [ ! -z "$REFRESH_TOKEN" ]; then
-    REFRESH_RESP=$(curl -s -X POST http://localhost:8001/auth/refresh \
+    REFRESH_RESP=$(curl -s -X POST http://localhost:8000/api/auth/refresh \
       -H "Content-Type: application/json" \
       -d "{\"refresh_token\":\"$REFRESH_TOKEN\"}")
     echo "$REFRESH_RESP" | python3 -m json.tool
@@ -148,7 +148,7 @@ echo ""
 # Test 9: Wrong Password
 echo "Test 9: Wrong Password Login"
 echo "----------------------------------------"
-WRONG_PASS=$(curl -s -X POST http://localhost:8001/auth/login \
+WRONG_PASS=$(curl -s -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","password":"WrongPassword"}')
 echo "$WRONG_PASS" | python3 -m json.tool
@@ -162,7 +162,7 @@ echo ""
 # Test 10: Duplicate Registration
 echo "Test 10: Duplicate Username Registration"
 echo "----------------------------------------"
-DUP_RESP=$(curl -s -X POST http://localhost:8001/auth/register \
+DUP_RESP=$(curl -s -X POST http://localhost:8000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"newuser@test.com","username":"testuser","password":"SomePass123","role":"user"}')
 echo "$DUP_RESP" | python3 -m json.tool

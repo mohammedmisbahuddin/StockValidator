@@ -20,7 +20,7 @@ To run specific tests: Right-click on Thread Group → Start</stringProp>
           </elementProp>
           <elementProp name="AUTH_PORT" elementType="Argument">
             <stringProp name="Argument.name">AUTH_PORT</stringProp>
-            <stringProp name="Argument.value">8001</stringProp>
+            <stringProp name="Argument.value">8000</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PROTOCOL" elementType="Argument">
@@ -92,7 +92,7 @@ To run specific tests: Right-click on Thread Group → Start</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/register</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/register</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -144,7 +144,7 @@ log.info(&quot;Admin username saved: &quot; + vars.get(&quot;admin_username&quot
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/login</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/login</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -201,7 +201,7 @@ log.info(&quot;Admin tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/register</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/register</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -260,7 +260,7 @@ log.info(&quot;User username saved: &quot; + vars.get(&quot;user_username&quot;)
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/login</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/login</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -335,7 +335,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/me</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/me</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -369,7 +369,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/refresh</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/refresh</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -414,7 +414,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/me</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/me</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -448,7 +448,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/refresh</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/refresh</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -499,7 +499,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/login</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/login</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -533,7 +533,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/me</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/me</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -558,7 +558,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
           <stringProp name="HTTPSampler.domain">${AUTH_HOST}</stringProp>
           <stringProp name="HTTPSampler.port">${AUTH_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
-          <stringProp name="HTTPSampler.path">/auth/me</stringProp>
+          <stringProp name="HTTPSampler.path">/api/auth/me</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -604,9 +604,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1️⃣ Validate Ticker - AAPL" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks/validate</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks/validate</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -661,9 +661,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2️⃣ Create Stock - AAPL (Ready/Pullback1)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -708,9 +708,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="3️⃣ Create Stock - MSFT (Near)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -754,9 +754,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="4️⃣ Get All Stocks (Grouped by Category)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -789,9 +789,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="5️⃣ Update Stock - AAPL (Near)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks/AAPL</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks/AAPL</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -834,9 +834,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="6️⃣ Get Specific Stock - MSFT" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks/MSFT</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks/MSFT</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -882,9 +882,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1️⃣ Search Valid Stock - AAPL (Found in System)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks/search/AAPL</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks/search/AAPL</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -924,9 +924,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2️⃣ Search Valid Stock - GOOGL (Not in System)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks/search/GOOGL</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks/search/GOOGL</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -959,9 +959,9 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="3️⃣ Search Invalid Stock - INVALID123 (No Limit Decrement)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/stocks/search/INVALID123</stringProp>
+          <stringProp name="HTTPSampler.path">/api/stocks/search/INVALID123</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -1007,7 +1007,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="1️⃣ Get User Rate Limit Info" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.path">/admin/rate-limits/${__P(user_id)}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -1042,7 +1042,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="2️⃣ Update User Rate Limit (100 searches)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.path">/admin/rate-limits/${__P(user_id)}</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -1085,7 +1085,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="3️⃣ Reset User Rate Limit" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.path">/admin/rate-limits/${__P(user_id)}/reset</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -1120,7 +1120,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="4️⃣ Reset All User Rate Limits" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.path">/admin/rate-limits/reset-all</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -1155,7 +1155,7 @@ log.info(&quot;User tokens saved as properties&quot;)</stringProp>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="5️⃣ Set Universal Rate Limit (50 searches)" enabled="true">
           <intProp name="HTTPSampler.concurrentPool">6</intProp>
           <stringProp name="HTTPSampler.domain">localhost</stringProp>
-          <stringProp name="HTTPSampler.port">8002</stringProp>
+          <stringProp name="HTTPSampler.port">8000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
           <stringProp name="HTTPSampler.path">/admin/rate-limits/universal-limit</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
