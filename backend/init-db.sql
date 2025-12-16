@@ -45,3 +45,37 @@ COMMENT ON COLUMN stock_schema.stocks.category IS 'Stock category: far, near, al
 COMMENT ON COLUMN stock_schema.stocks.subcategory IS 'Subcategory for ready stocks: pullback1 or pullback2';
 COMMENT ON COLUMN stock_schema.stocks.state_history IS 'JSONB array tracking category changes with timestamps';
 
+-- ===== Notification Schema Tables =====
+
+-- Notifications table
+CREATE TABLE IF NOT EXISTS notification_schema.notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    created_by UUID REFERENCES auth_schema.users(id) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- User notifications table (tracks read status)
+CREATE TABLE IF NOT EXISTS notification_schema.user_notifications (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    notification_id UUID REFERENCES notification_schema.notifications(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES auth_schema.users(id) ON DELETE CASCADE NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE NOT NULL,
+    read_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(notification_id, user_id)
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_notifications_created_by ON notification_schema.notifications(created_by);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notification_schema.notifications(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_notifications_user_id ON notification_schema.user_notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_notifications_notification_id ON notification_schema.user_notifications(notification_id);
+CREATE INDEX IF NOT EXISTS idx_user_notifications_is_read ON notification_schema.user_notifications(is_read);
+
+-- Comments for documentation
+COMMENT ON TABLE notification_schema.notifications IS 'Admin-created notifications/bulletins';
+COMMENT ON TABLE notification_schema.user_notifications IS 'Tracks which users have read which notifications';
+

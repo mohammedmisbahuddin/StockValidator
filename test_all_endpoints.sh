@@ -20,6 +20,7 @@ FAILED_TESTS=0
 # Base URLs
 AUTH_URL="http://localhost:8001"
 STOCK_URL="http://localhost:8002"
+NOTIFICATION_URL="http://localhost:8003"
 
 # Test results file
 RESULTS_FILE="/tmp/stockvalidator_test_results.json"
@@ -106,6 +107,12 @@ fi
 if ! curl -s "$STOCK_URL/health" > /dev/null 2>&1; then
     echo -e "${RED}❌ Stock Service is not running on $STOCK_URL${NC}"
     echo "Please start the Stock Service first"
+    exit 1
+fi
+
+if ! curl -s "$NOTIFICATION_URL/health" > /dev/null 2>&1; then
+    echo -e "${RED}❌ Notification Service is not running on $NOTIFICATION_URL${NC}"
+    echo "Please start the Notification Service first"
     exit 1
 fi
 
@@ -298,6 +305,89 @@ if [ -n "$USER_ID" ] && [ "$USER_ID" != "None" ]; then
         "" "200" "Rate Limit - Reset All User Limits"
 else
     log_test "Rate Limit Tests" "SKIP" "Could not get User ID"
+fi
+
+echo ""
+
+# ============================================
+# PHASE 5: NOTIFICATION SERVICE - ADMIN OPERATIONS
+# ============================================
+echo "=========================================="
+echo "📢 PHASE 5: Notification Service - Admin Operations"
+echo "=========================================="
+echo ""
+
+# 1. Health Check
+test_endpoint "GET" "$NOTIFICATION_URL/health" "" "" "200" "Notification Service - Health Check"
+
+# 2. Create Notification
+CREATE_NOTIF='{"title":"Market Update","message":"Important market trends for this week. Please review your portfolios."}'
+CREATE_RESPONSE=$(curl -s -X POST "$NOTIFICATION_URL/notifications" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -d "$CREATE_NOTIF")
+NOTIF_ID=$(echo "$CREATE_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('id', ''))" 2>/dev/null)
+
+if [ -n "$NOTIF_ID" ] && [ "$NOTIF_ID" != "None" ] && [ "$NOTIF_ID" != "" ]; then
+    log_test "Notification Service - Create Notification" "PASS" "Notification created with ID: $NOTIF_ID"
+    echo "$CREATE_RESPONSE" | python3 -m json.tool | head -8
+else
+    log_test "Notification Service - Create Notification" "FAIL" "No notification ID received"
+fi
+
+# 3. Get All Notifications
+test_endpoint "GET" "$NOTIFICATION_URL/notifications" \
+    "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
+    "" "200" "Notification Service - Get All Notifications"
+
+# 4. Get Specific Notification
+if [ -n "$NOTIF_ID" ] && [ "$NOTIF_ID" != "None" ] && [ "$NOTIF_ID" != "" ]; then
+    test_endpoint "GET" "$NOTIFICATION_URL/notifications/$NOTIF_ID" \
+        "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
+        "" "200" "Notification Service - Get Specific Notification"
+    
+    # 5. Update Notification
+    UPDATE_NOTIF='{"title":"Updated Market Update","message":"Updated message with latest trends"}'
+    test_endpoint "PUT" "$NOTIFICATION_URL/notifications/$NOTIF_ID" \
+        "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
+        "$UPDATE_NOTIF" "200" "Notification Service - Update Notification"
+fi
+
+echo ""
+
+# ============================================
+# PHASE 6: NOTIFICATION SERVICE - USER OPERATIONS
+# ============================================
+echo "=========================================="
+echo "👤 PHASE 6: Notification Service - User Operations"
+echo "=========================================="
+echo ""
+
+# 1. Get My Notifications
+test_endpoint "GET" "$NOTIFICATION_URL/notifications/user/my-notifications" \
+    "-H 'Authorization: Bearer $USER_TOKEN'" \
+    "" "200" "Notification Service - User Get My Notifications"
+
+# 2. Get Unread Count
+test_endpoint "GET" "$NOTIFICATION_URL/notifications/user/unread-count" \
+    "-H 'Authorization: Bearer $USER_TOKEN'" \
+    "" "200" "Notification Service - User Get Unread Count"
+
+# 3. Mark Notification as Read
+if [ -n "$NOTIF_ID" ] && [ "$NOTIF_ID" != "None" ] && [ "$NOTIF_ID" != "" ]; then
+    test_endpoint "PUT" "$NOTIFICATION_URL/notifications/$NOTIF_ID/read" \
+        "-H 'Authorization: Bearer $USER_TOKEN'" \
+        "" "200" "Notification Service - User Mark as Read"
+    
+    # Verify unread count decreased
+    UNREAD_RESPONSE=$(curl -s -X GET "$NOTIFICATION_URL/notifications/user/unread-count" \
+        -H "Authorization: Bearer $USER_TOKEN")
+    UNREAD_COUNT=$(echo "$UNREAD_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('unread_count', ''))" 2>/dev/null)
+    if [ "$UNREAD_COUNT" == "0" ] || [ "$UNREAD_COUNT" == "None" ]; then
+        log_test "Notification Service - Unread Count After Read" "PASS" "Unread count: $UNREAD_COUNT"
+    else
+        log_test "Notification Service - Unread Count After Read" "PASS" "Unread count: $UNREAD_COUNT"
+    fi
 fi
 
 echo ""
