@@ -17,10 +17,16 @@ TOTAL_TESTS=0
 PASSED_TESTS=0
 FAILED_TESTS=0
 
-# Base URLs
-AUTH_URL="http://localhost:8001"
-STOCK_URL="http://localhost:8002"
-NOTIFICATION_URL="http://localhost:8003"
+# Base URLs - Using API Gateway (unified entry point)
+GATEWAY_URL="http://localhost:8000"
+AUTH_URL="$GATEWAY_URL/api/auth"
+STOCK_URL="$GATEWAY_URL/api/stocks"
+NOTIFICATION_URL="$GATEWAY_URL/api/notifications"
+
+# Direct service URLs (for health checks)
+AUTH_SERVICE_URL="http://localhost:8001"
+STOCK_SERVICE_URL="http://localhost:8002"
+NOTIFICATION_SERVICE_URL="http://localhost:8003"
 
 # Test results file
 RESULTS_FILE="/tmp/stockvalidator_test_results.json"
@@ -98,20 +104,26 @@ echo ""
 
 # Check if services are running
 echo "🔍 Checking services..."
-if ! curl -s "$AUTH_URL/health" > /dev/null 2>&1; then
-    echo -e "${RED}❌ Auth Service is not running on $AUTH_URL${NC}"
+if ! curl -s "$GATEWAY_URL/health" > /dev/null 2>&1; then
+    echo -e "${RED}❌ API Gateway is not running on $GATEWAY_URL${NC}"
+    echo "Please start the API Gateway first"
+    exit 1
+fi
+
+if ! curl -s "$AUTH_SERVICE_URL/health" > /dev/null 2>&1; then
+    echo -e "${RED}❌ Auth Service is not running on $AUTH_SERVICE_URL${NC}"
     echo "Please start the Auth Service first"
     exit 1
 fi
 
-if ! curl -s "$STOCK_URL/health" > /dev/null 2>&1; then
-    echo -e "${RED}❌ Stock Service is not running on $STOCK_URL${NC}"
+if ! curl -s "$STOCK_SERVICE_URL/health" > /dev/null 2>&1; then
+    echo -e "${RED}❌ Stock Service is not running on $STOCK_SERVICE_URL${NC}"
     echo "Please start the Stock Service first"
     exit 1
 fi
 
-if ! curl -s "$NOTIFICATION_URL/health" > /dev/null 2>&1; then
-    echo -e "${RED}❌ Notification Service is not running on $NOTIFICATION_URL${NC}"
+if ! curl -s "$NOTIFICATION_SERVICE_URL/health" > /dev/null 2>&1; then
+    echo -e "${RED}❌ Notification Service is not running on $NOTIFICATION_SERVICE_URL${NC}"
     echo "Please start the Notification Service first"
     exit 1
 fi
@@ -127,20 +139,20 @@ echo "🔐 PHASE 1: Auth Service Tests"
 echo "=========================================="
 echo ""
 
-# 1. Health Check
-test_endpoint "GET" "$AUTH_URL/health" "" "" "200" "Auth Service - Health Check"
+# 1. Gateway Health Check
+test_endpoint "GET" "$GATEWAY_URL/health" "" "" "200" "API Gateway - Health Check"
 
-# 2. Register Admin User
+# 2. Register Admin User (through gateway)
 ADMIN_REGISTER='{"email":"testadmin@test.com","username":"testadmin","password":"Admin@123","role":"admin"}'
-test_endpoint "POST" "$AUTH_URL/auth/register" "-H 'Content-Type: application/json'" "$ADMIN_REGISTER" "201" "Auth Service - Register Admin"
+test_endpoint "POST" "$AUTH_URL/register" "-H 'Content-Type: application/json'" "$ADMIN_REGISTER" "201" "Auth Service - Register Admin (via Gateway)"
 
-# 3. Register Regular User
+# 3. Register Regular User (through gateway)
 USER_REGISTER='{"email":"testuser@test.com","username":"testuser","password":"User@123","role":"user"}'
-test_endpoint "POST" "$AUTH_URL/auth/register" "-H 'Content-Type: application/json'" "$USER_REGISTER" "201" "Auth Service - Register User"
+test_endpoint "POST" "$AUTH_URL/register" "-H 'Content-Type: application/json'" "$USER_REGISTER" "201" "Auth Service - Register User (via Gateway)"
 
-# 4. Login Admin
+# 4. Login Admin (through gateway)
 ADMIN_LOGIN='{"username":"testadmin","password":"Admin@123"}'
-ADMIN_RESPONSE=$(curl -s -X POST "$AUTH_URL/auth/login" \
+ADMIN_RESPONSE=$(curl -s -X POST "$AUTH_URL/login" \
     -H "Content-Type: application/json" \
     -d "$ADMIN_LOGIN")
 ADMIN_TOKEN=$(echo "$ADMIN_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('access_token', ''))" 2>/dev/null)
@@ -152,9 +164,9 @@ else
     exit 1
 fi
 
-# 5. Login User
+# 5. Login User (through gateway)
 USER_LOGIN='{"username":"testuser","password":"User@123"}'
-USER_RESPONSE=$(curl -s -X POST "$AUTH_URL/auth/login" \
+USER_RESPONSE=$(curl -s -X POST "$AUTH_URL/login" \
     -H "Content-Type: application/json" \
     -d "$USER_LOGIN")
 USER_TOKEN=$(echo "$USER_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('access_token', ''))" 2>/dev/null)
@@ -166,11 +178,11 @@ else
     exit 1
 fi
 
-# 6. Get Current User (Admin)
-test_endpoint "GET" "$AUTH_URL/auth/me" "-H 'Authorization: Bearer $ADMIN_TOKEN'" "" "200" "Auth Service - Get Current User (Admin)"
+# 6. Get Current User (Admin) - through gateway
+test_endpoint "GET" "$AUTH_URL/me" "-H 'Authorization: Bearer $ADMIN_TOKEN'" "" "200" "Auth Service - Get Current User (Admin via Gateway)"
 
-# 7. Get Current User (User)
-test_endpoint "GET" "$AUTH_URL/auth/me" "-H 'Authorization: Bearer $USER_TOKEN'" "" "200" "Auth Service - Get Current User (User)"
+# 7. Get Current User (User) - through gateway
+test_endpoint "GET" "$AUTH_URL/me" "-H 'Authorization: Bearer $USER_TOKEN'" "" "200" "Auth Service - Get Current User (User via Gateway)"
 
 echo ""
 
@@ -182,60 +194,57 @@ echo "📦 PHASE 2: Stock Service - Admin Operations"
 echo "=========================================="
 echo ""
 
-# 1. Health Check
-test_endpoint "GET" "$STOCK_URL/health" "" "" "200" "Stock Service - Health Check"
-
-# 2. Validate Ticker (US Stock)
+# 1. Validate Ticker (US Stock) - through gateway
 VALIDATE_US='{"ticker":"AAPL"}'
-test_endpoint "POST" "$STOCK_URL/stocks/validate" \
+test_endpoint "POST" "$STOCK_URL/validate" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$VALIDATE_US" "200" "Stock Service - Validate US Ticker (AAPL)"
+    "$VALIDATE_US" "200" "Stock Service - Validate US Ticker (AAPL via Gateway)"
 
-# 3. Validate Ticker (Indian Stock)
+# 2. Validate Ticker (Indian Stock) - through gateway
 VALIDATE_INDIAN='{"ticker":"RELIANCE.NS"}'
-test_endpoint "POST" "$STOCK_URL/stocks/validate" \
+test_endpoint "POST" "$STOCK_URL/validate" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$VALIDATE_INDIAN" "200" "Stock Service - Validate Indian Ticker (RELIANCE.NS)"
+    "$VALIDATE_INDIAN" "200" "Stock Service - Validate Indian Ticker (RELIANCE.NS via Gateway)"
 
-# 4. Validate Ticker (Auto-detect Indian)
+# 3. Validate Ticker (Auto-detect Indian) - through gateway
 VALIDATE_AUTO='{"ticker":"TCS"}'
-test_endpoint "POST" "$STOCK_URL/stocks/validate" \
+test_endpoint "POST" "$STOCK_URL/validate" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$VALIDATE_AUTO" "200" "Stock Service - Validate Auto-detect Indian (TCS)"
+    "$VALIDATE_AUTO" "200" "Stock Service - Validate Auto-detect Indian (TCS via Gateway)"
 
-# 5. Create Stock (AAPL)
+# 4. Create Stock (AAPL) - through gateway
 CREATE_AAPL='{"ticker":"AAPL","company_name":"Apple Inc.","category":"ready","subcategory":"pullback1","current_price":175.50}'
-test_endpoint "POST" "$STOCK_URL/stocks" \
+test_endpoint "POST" "$STOCK_URL" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$CREATE_AAPL" "201" "Stock Service - Create Stock (AAPL)"
+    "$CREATE_AAPL" "201" "Stock Service - Create Stock (AAPL via Gateway)"
 
-# 6. Create Stock (MSFT)
+# 5. Create Stock (MSFT) - through gateway
 CREATE_MSFT='{"ticker":"MSFT","company_name":"Microsoft Corporation","category":"near","current_price":380.00}'
-test_endpoint "POST" "$STOCK_URL/stocks" \
+test_endpoint "POST" "$STOCK_URL" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$CREATE_MSFT" "201" "Stock Service - Create Stock (MSFT)"
+    "$CREATE_MSFT" "201" "Stock Service - Create Stock (MSFT via Gateway)"
 
-# 7. Create Stock (Indian - TCS.NS)
+# 6. Create Stock (Indian - TCS.NS) - through gateway
 CREATE_TCS='{"ticker":"TCS.NS","company_name":"Tata Consultancy Services Limited","category":"ready","subcategory":"pullback2","current_price":3750.00}'
-test_endpoint "POST" "$STOCK_URL/stocks" \
+test_endpoint "POST" "$STOCK_URL" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$CREATE_TCS" "201" "Stock Service - Create Indian Stock (TCS.NS)"
+    "$CREATE_TCS" "201" "Stock Service - Create Indian Stock (TCS.NS via Gateway)"
 
-# 8. Get All Stocks
-test_endpoint "GET" "$STOCK_URL/stocks" \
+# 7. Get All Stocks - through gateway
+test_endpoint "GET" "$STOCK_URL" \
     "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "" "200" "Stock Service - Get All Stocks"
+    "" "200" "Stock Service - Get All Stocks (via Gateway)"
 
-# 9. Get Specific Stock
-test_endpoint "GET" "$STOCK_URL/stocks/AAPL" \
+# 8. Get Specific Stock - through gateway
+test_endpoint "GET" "$STOCK_URL/AAPL" \
     "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "" "200" "Stock Service - Get Specific Stock (AAPL)"
+    "" "200" "Stock Service - Get Specific Stock (AAPL via Gateway)"
 
-# 10. Update Stock
+# 9. Update Stock - through gateway
 UPDATE_AAPL='{"category":"near"}'
-test_endpoint "PUT" "$STOCK_URL/stocks/AAPL" \
+test_endpoint "PUT" "$STOCK_URL/AAPL" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "$UPDATE_AAPL" "200" "Stock Service - Update Stock (AAPL)"
+    "$UPDATE_AAPL" "200" "Stock Service - Update Stock (AAPL via Gateway)"
 
 echo ""
 
@@ -247,25 +256,25 @@ echo "👤 PHASE 3: Stock Service - User Operations"
 echo "=========================================="
 echo ""
 
-# 1. Search Stock (Found in System)
-test_endpoint "GET" "$STOCK_URL/stocks/search/AAPL" \
+# 1. Search Stock (Found in System) - through gateway
+test_endpoint "GET" "$STOCK_URL/search/AAPL" \
     "-H 'Authorization: Bearer $USER_TOKEN'" \
-    "" "200" "Stock Service - User Search Stock (Found - AAPL)"
+    "" "200" "Stock Service - User Search Stock (Found - AAPL via Gateway)"
 
-# 2. Search Stock (Not in System but Valid)
-test_endpoint "GET" "$STOCK_URL/stocks/search/GOOGL" \
+# 2. Search Stock (Not in System but Valid) - through gateway
+test_endpoint "GET" "$STOCK_URL/search/GOOGL" \
     "-H 'Authorization: Bearer $USER_TOKEN'" \
-    "" "200" "Stock Service - User Search Stock (Valid but Not in DB - GOOGL)"
+    "" "200" "Stock Service - User Search Stock (Valid but Not in DB - GOOGL via Gateway)"
 
-# 3. Search Invalid Stock
-test_endpoint "GET" "$STOCK_URL/stocks/search/INVALID123" \
+# 3. Search Invalid Stock - through gateway
+test_endpoint "GET" "$STOCK_URL/search/INVALID123" \
     "-H 'Authorization: Bearer $USER_TOKEN'" \
-    "" "200" "Stock Service - User Search Invalid Stock"
+    "" "200" "Stock Service - User Search Invalid Stock (via Gateway)"
 
-# 4. Validate Ticker (User - No Limit Impact)
-test_endpoint "POST" "$STOCK_URL/stocks/validate" \
+# 4. Validate Ticker (User - No Limit Impact) - through gateway
+test_endpoint "POST" "$STOCK_URL/validate" \
     "-H 'Content-Type: application/json' -H 'Authorization: Bearer $USER_TOKEN'" \
-    "$VALIDATE_US" "200" "Stock Service - User Validate Ticker (No Limit)"
+    "$VALIDATE_US" "200" "Stock Service - User Validate Ticker (No Limit via Gateway)"
 
 echo ""
 
@@ -277,32 +286,32 @@ echo "⚙️ PHASE 4: Rate Limit Management (Admin)"
 echo "=========================================="
 echo ""
 
-# Get User ID from token (decode JWT or get from /auth/me)
-USER_ID_RESPONSE=$(curl -s -X GET "$AUTH_URL/auth/me" \
+# Get User ID from token (decode JWT or get from /auth/me) - through gateway
+USER_ID_RESPONSE=$(curl -s -X GET "$AUTH_URL/me" \
     -H "Authorization: Bearer $USER_TOKEN")
 USER_ID=$(echo "$USER_ID_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('id', ''))" 2>/dev/null)
 
 if [ -n "$USER_ID" ] && [ "$USER_ID" != "None" ]; then
-    # 1. Get User Rate Limit Info
+    # 1. Get User Rate Limit Info - through gateway
     test_endpoint "GET" "$STOCK_URL/admin/rate-limits/$USER_ID" \
         "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-        "" "200" "Rate Limit - Get User Rate Limit Info"
+        "" "200" "Rate Limit - Get User Rate Limit Info (via Gateway)"
     
-    # 2. Update User Rate Limit
+    # 2. Update User Rate Limit - through gateway
     UPDATE_LIMIT='{"search_limit":100}'
     test_endpoint "PUT" "$STOCK_URL/admin/rate-limits/$USER_ID" \
         "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-        "$UPDATE_LIMIT" "200" "Rate Limit - Update User Limit to 100"
+        "$UPDATE_LIMIT" "200" "Rate Limit - Update User Limit to 100 (via Gateway)"
     
-    # 3. Reset User Rate Limit
+    # 3. Reset User Rate Limit - through gateway
     test_endpoint "POST" "$STOCK_URL/admin/rate-limits/$USER_ID/reset" \
         "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-        "" "200" "Rate Limit - Reset User Limit"
+        "" "200" "Rate Limit - Reset User Limit (via Gateway)"
     
-    # 4. Reset All User Limits
+    # 4. Reset All User Limits - through gateway
     test_endpoint "POST" "$STOCK_URL/admin/rate-limits/reset-all" \
         "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-        "" "200" "Rate Limit - Reset All User Limits"
+        "" "200" "Rate Limit - Reset All User Limits (via Gateway)"
 else
     log_test "Rate Limit Tests" "SKIP" "Could not get User ID"
 fi
@@ -317,12 +326,9 @@ echo "📢 PHASE 5: Notification Service - Admin Operations"
 echo "=========================================="
 echo ""
 
-# 1. Health Check
-test_endpoint "GET" "$NOTIFICATION_URL/health" "" "" "200" "Notification Service - Health Check"
-
-# 2. Create Notification
+# 1. Create Notification - through gateway
 CREATE_NOTIF='{"title":"Market Update","message":"Important market trends for this week. Please review your portfolios."}'
-CREATE_RESPONSE=$(curl -s -X POST "$NOTIFICATION_URL/notifications" \
+CREATE_RESPONSE=$(curl -s -X POST "$NOTIFICATION_URL" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $ADMIN_TOKEN" \
     -d "$CREATE_NOTIF")
@@ -335,22 +341,22 @@ else
     log_test "Notification Service - Create Notification" "FAIL" "No notification ID received"
 fi
 
-# 3. Get All Notifications
-test_endpoint "GET" "$NOTIFICATION_URL/notifications" \
+# 2. Get All Notifications - through gateway
+test_endpoint "GET" "$NOTIFICATION_URL" \
     "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-    "" "200" "Notification Service - Get All Notifications"
+    "" "200" "Notification Service - Get All Notifications (via Gateway)"
 
-# 4. Get Specific Notification
+# 3. Get Specific Notification - through gateway
 if [ -n "$NOTIF_ID" ] && [ "$NOTIF_ID" != "None" ] && [ "$NOTIF_ID" != "" ]; then
-    test_endpoint "GET" "$NOTIFICATION_URL/notifications/$NOTIF_ID" \
+    test_endpoint "GET" "$NOTIFICATION_URL/$NOTIF_ID" \
         "-H 'Authorization: Bearer $ADMIN_TOKEN'" \
-        "" "200" "Notification Service - Get Specific Notification"
+        "" "200" "Notification Service - Get Specific Notification (via Gateway)"
     
-    # 5. Update Notification
+    # 4. Update Notification - through gateway
     UPDATE_NOTIF='{"title":"Updated Market Update","message":"Updated message with latest trends"}'
-    test_endpoint "PUT" "$NOTIFICATION_URL/notifications/$NOTIF_ID" \
+    test_endpoint "PUT" "$NOTIFICATION_URL/$NOTIF_ID" \
         "-H 'Content-Type: application/json' -H 'Authorization: Bearer $ADMIN_TOKEN'" \
-        "$UPDATE_NOTIF" "200" "Notification Service - Update Notification"
+        "$UPDATE_NOTIF" "200" "Notification Service - Update Notification (via Gateway)"
 fi
 
 echo ""
@@ -363,24 +369,24 @@ echo "👤 PHASE 6: Notification Service - User Operations"
 echo "=========================================="
 echo ""
 
-# 1. Get My Notifications
-test_endpoint "GET" "$NOTIFICATION_URL/notifications/user/my-notifications" \
+# 1. Get My Notifications - through gateway
+test_endpoint "GET" "$NOTIFICATION_URL/user/my-notifications" \
     "-H 'Authorization: Bearer $USER_TOKEN'" \
-    "" "200" "Notification Service - User Get My Notifications"
+    "" "200" "Notification Service - User Get My Notifications (via Gateway)"
 
-# 2. Get Unread Count
-test_endpoint "GET" "$NOTIFICATION_URL/notifications/user/unread-count" \
+# 2. Get Unread Count - through gateway
+test_endpoint "GET" "$NOTIFICATION_URL/user/unread-count" \
     "-H 'Authorization: Bearer $USER_TOKEN'" \
-    "" "200" "Notification Service - User Get Unread Count"
+    "" "200" "Notification Service - User Get Unread Count (via Gateway)"
 
-# 3. Mark Notification as Read
+# 3. Mark Notification as Read - through gateway
 if [ -n "$NOTIF_ID" ] && [ "$NOTIF_ID" != "None" ] && [ "$NOTIF_ID" != "" ]; then
-    test_endpoint "PUT" "$NOTIFICATION_URL/notifications/$NOTIF_ID/read" \
+    test_endpoint "PUT" "$NOTIFICATION_URL/$NOTIF_ID/read" \
         "-H 'Authorization: Bearer $USER_TOKEN'" \
-        "" "200" "Notification Service - User Mark as Read"
+        "" "200" "Notification Service - User Mark as Read (via Gateway)"
     
     # Verify unread count decreased
-    UNREAD_RESPONSE=$(curl -s -X GET "$NOTIFICATION_URL/notifications/user/unread-count" \
+    UNREAD_RESPONSE=$(curl -s -X GET "$NOTIFICATION_URL/user/unread-count" \
         -H "Authorization: Bearer $USER_TOKEN")
     UNREAD_COUNT=$(echo "$UNREAD_RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin).get('unread_count', ''))" 2>/dev/null)
     if [ "$UNREAD_COUNT" == "0" ] || [ "$UNREAD_COUNT" == "None" ]; then
